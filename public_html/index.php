@@ -7,9 +7,7 @@ if(!isset($_SERVER['PATH_INFO'])) {
 
 try {
 	$controller = \App\Helper\Route::route($_SERVER['PATH_INFO'], $container->get('default_controller_name'), $container);
-
-	$layout = new \App\Helper\LayoutController($controller, $container);
-	echo $layout->body();
+	$controller->output();
 
 } catch(\App\Helper\HttpError $e) {
 	header('HTTP/1.0 '.$e->getCode());

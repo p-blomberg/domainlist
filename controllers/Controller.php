@@ -1,8 +1,12 @@
 <?php
 namespace App\Controller;
 
+use \App\Helper\AppException;
+
 class Controller {
 	protected $title, $body, $scripts, $container;
+	protected $use_layout = true;
+	protected $json_data;
 
 	protected function view(string $view, array $data=[]): string {
 		extract($data);
@@ -50,8 +54,16 @@ class Controller {
 		return $this->scripts;
 	}
 
-	protected function output_json($data) {
-		echo json_encode($data);
-		exit;
+	public function output() {
+		if(isset($this->json_data)) {
+			echo json_encode($this->json_data);
+		} else {
+			if($this->use_layout) {
+				$layout = new \App\Helper\LayoutController($this, $this->container);
+				echo $layout->body();
+			} else {
+				echo $this->body();
+			}
+		}
 	}
 }

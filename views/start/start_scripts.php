@@ -12,6 +12,7 @@ $(function() {
 				console.info(data);
 				if(data.result == "ok") {
 					$('#add_domain_domain').val('');
+					reload_list();
 				} else {
 					console.warn('Bad response: ');
 					console.warn(data);
@@ -30,5 +31,10 @@ $(function() {
 	$('#add_domain_domain').keypress(function(event) {
 		$('#add_domain_error').html('');
 	});
+
+	function reload_list() {
+		$('#domainlist_tbody').load('/domain/list_tbody');
+	}
+	reload_list();
 });
 </script>
