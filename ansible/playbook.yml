@@ -42,6 +42,9 @@
     - name: make directory for sessions
       file: dest=/opt/domainlist/sessions state=directory mode=1731 group=www-data
 
+    - name: install redis
+      apt: name=redis-server state=installed
+
   handlers:
     - name: upgrade packages
       apt: update_cache=yes upgrade=safe

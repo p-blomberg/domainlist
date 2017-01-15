@@ -6,4 +6,5 @@ return [
 	'default_controller_name' => 'start',
 	'path_views' => __DIR__.'/views/',
 	'app_name' => 'Domainlist',
+	'Redis' => DI\object('\Predis\Client')->constructor('tcp://localhost:6379'),
 ];

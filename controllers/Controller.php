@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 class Controller {
-	protected $title, $body, $container;
+	protected $title, $body, $scripts, $container;
 
 	protected function view(string $view, array $data=[]): string {
 		extract($data);
@@ -45,5 +45,13 @@ class Controller {
 	}
 	public function body(): string {
 		return $this->body;
+	}
+	public function scripts(): string {
+		return $this->scripts;
+	}
+
+	protected function output_json($data) {
+		echo json_encode($data);
+		exit;
 	}
 }
