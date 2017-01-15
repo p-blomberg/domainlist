@@ -10,7 +10,15 @@ if(empty($domains)) {
 		?>
 		<tr>
 			<td><?=$name?></td>
-			<td><?php try { echo $domain->ns; } catch(AppException $e) { echo '(waiting for data)'; } ?></td>
+			<td>
+				<?php
+				try {
+					foreach($domain->ns as $ns) {
+						echo $ns."<br>";
+					}
+				} catch(AppException $e) { echo '(waiting for data)'; }
+				?>
+			</td>
 		</tr>
 		<?php
 	}
