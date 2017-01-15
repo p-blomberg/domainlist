@@ -1,0 +1,53 @@
+---
+- hosts: default
+  become: true
+  tasks:
+    - name: install aptitude
+      apt: name=aptitude state=installed update_cache=yes
+    - name: create /opt/first_apt_cache_update_done
+      copy: dest=/opt/first_apt_cache_update_done content="" force=no
+      notify: upgrade packages
+    - name: reconfigure locales
+      template: src=locale.gen.j2 dest=/etc/locale.gen owner=root group=root
+      notify: re-generate locales
+      # correct locales are needed for postgres to install properly.
+
+    - meta: flush_handlers
+
+    - name: uninstall exim4
+      apt: name=exim4* state=absent
+    - name: install nginx
+      apt: name=nginx state=installed
+    - name: install php7 and addons
+      apt: name=php7.0-cli,php7.0-fpm,php7.0-curl,php7.0-json state=installed
+      notify: restart php
+
+    - name: configure nginx (remove default vhost)
+      file: path=/etc/nginx/sites-enabled/default state=absent
+
+    - name: configure nginx
+      template: src=vhost.j2 dest=/etc/nginx/sites-enabled/vhost.conf owner=root group=root
+      notify: restart nginx
+
+    - name: configure php7.0-fpm for debugging
+      lineinfile:
+        dest: /etc/php/7.0/fpm/pool.d/www.conf
+        regexp: "{{item.regexp}}"
+        line: "{{item.line}}"
+      with_items:
+        - { regexp: '^php_flag[display_errors] =', line: 'php_flag[display_errors] = on' }
+        - { regexp: '^catch_workers_output =', line: 'catch_workers_output = yes' }
+      notify: restart php
+
+    - name: make directory for sessions
+      file: dest=/opt/domainlist/sessions state=directory mode=1731 group=www-data
+
+  handlers:
+    - name: upgrade packages
+      apt: update_cache=yes upgrade=safe
+    - name: re-generate locales
+      command: /usr/sbin/locale-gen
+    - name: restart nginx
+      service: name=nginx state=restarted
+    - name: restart php
+      service: name=php7.0-fpm state=restarted

@@ -1,0 +1,14 @@
+server {
+  listen 80;
+  listen [::]:80;
+  add_header X-Frame-Options DENY;
+  root /vagrant/public_html;
+	location / {
+		set $path_info $fastcgi_path_info;
+		fastcgi_param PATH_INFO $uri;
+		fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+		fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+		include fastcgi_params;
+	}
+	location ~ /\. { deny all; access_log off; log_not_found off; }
+}
