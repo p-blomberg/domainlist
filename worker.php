@@ -10,6 +10,8 @@ if(file_exists($container->get('worker_pidfile_path'))) {
 function remove_pidfile($worker_pidfile_path) {
 	unlink($worker_pidfile_path);
 }
+
+// Handle ctrl+c
 $running = true;
 function handle_signal($signal) {
 	global $running;
@@ -19,6 +21,8 @@ function handle_signal($signal) {
 declare(ticks=1);
 pcntl_signal(SIGINT, 'handle_signal');
 pcntl_signal(SIGTERM, 'handle_signal');
+
+// Clean up pid file no matter if we crashed or exited cleanly
 register_shutdown_function('remove_pidfile', $container->get('worker_pidfile_path'));
 
 // Prepare some stuff
@@ -52,7 +56,7 @@ function large_update($logger, $redis, $domain_data_expire) {
 	return $large_update_timestamp;
 }
 
-// The worker loop
+// Actual worker loop
 while(true) {
 	update($logger, $redis, $container->get('domain_data_expire'));
 
