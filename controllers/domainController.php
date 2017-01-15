@@ -1,5 +1,7 @@
 <?php
 namespace App\Controller;
+use \App\Model\Domain;
+use \App\Helper\AppException;
 
 class domainController extends Controller {
 	public function add() {
@@ -8,9 +10,9 @@ class domainController extends Controller {
 		}
 		try {
 			$name = $_POST['name'];
-			\App\Model\Domain::add($name, $this->container->get('Redis'));
+			Domain::add($name, $this->container->get('Redis'));
 			$this->output_json(["result" => "ok"]);
-		} catch(\App\Helper\AppException $e) {
+		} catch(AppException $e) {
 			$this->output_json(["result" => "fail", "error" => $e->getMessage()]);
 		}
 	}

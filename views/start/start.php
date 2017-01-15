@@ -1,3 +1,6 @@
+<?php
+use \App\Helper\AppException;
+?>
 <h1><?=$app_name?></h1>
 
 <?php
@@ -7,7 +10,7 @@ if(empty($domains)) {
 	<?php
 } else {
 	?>
-	<table>
+	<table class="table table-striped">
 		<thead>
 			<tr>
 				<th>domain</th>
@@ -16,11 +19,11 @@ if(empty($domains)) {
 		</thead>
 		<tbody>
 			<?php
-			foreach($domains as $d) {
+			foreach($domains as $name => $domain) {
 				?>
 				<tr>
-					<td><?=$d?></td>
-					<td><?=$d->ns?></td>
+					<td><?=$name?></td>
+					<td><?php try { echo $domain->ns; } catch(AppException $e) { echo '(waiting for data)'; } ?></td>
 				</tr>
 				<?php
 			}
