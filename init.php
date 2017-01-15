@@ -6,8 +6,8 @@ $builder = new \DI\ContainerBuilder();
 $builder->useAutowiring(true);
 $builder->useAnnotations(false);
 $builder->addDefinitions(__DIR__.'/settings.php');
-$c = $builder->build();
+$container = $builder->build();
 unset($builder);
 
 // Set up ErrorHandler
-App\Helper\ErrorHandler::register($c->get('debug'), $c->get('ErrorHandler.fail_severity'), $c->get('Logger'));
+App\Helper\ErrorHandler::register($container->get('debug'), $container->get('ErrorHandler.fail_severity'), $container->get('Logger'));

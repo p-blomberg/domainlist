@@ -27,7 +27,7 @@ class ErrorHandler {
 	public function handle_error(int $severity, string $message, string $file, int $line) {
 		$this->logger->error('Uncaught '.self::severity_name($severity).': '.$message.' from '.$file.' on line '.$line);
 		if($severity & $this->fail_severity) {
-			$this->errorpage($message);
+			$this->errorpage($message, $file, $line);
 		}
 	}
 	public function handle_shutdown() {
@@ -37,15 +37,19 @@ class ErrorHandler {
 		}
 		$this->handle_error($error['type'], $error['message'], $error['file'], $error['line']);
 	}
-	public function errorpage(string $message) {
+	public function errorpage(string $message, $file=null, $line=null) {
 		while(ob_get_level() > 0) {
 			ob_end_clean();
 		}
 		header("HTTP/1.0 500 Internal Server Error");
 		if($this->debug) {
-			echo "Something went wrong: ".$message.PHP_EOL;
+			if(!is_null($file) || !is_null($line)) {
+				echo 'Something went wrong: "'.$message.'" from '.$file.' on line '.$line.PHP_EOL;
+			} else {
+				echo 'Something went wrong: "'.$message.'"'.PHP_EOL;
+			}
 		} else {
-			echo "An error occurred and the page could not be loaded. Sorry!".PHP_EOL;
+			echo 'An error occurred and the page could not be loaded. Sorry!'.PHP_EOL;
 		}
 		exit;
 	}

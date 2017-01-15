@@ -1,10 +1,18 @@
 <?php
 require dirname(__DIR__)."/init.php";
 
-// Fire the controller somehow?
-echo "<pre>";
-var_dump($_SERVER['PATH_INFO']);
-var_dump($_GET);
+if(!isset($_SERVER['PATH_INFO'])) {
+	throw new Exception("PATH_INFO is not set");
+}
 
-require "missing_file.php"; // "Fatal error" should be caught by error handler
-throw new Exception("We are out of tea"); // Should be caught by exception handler
+try {
+	$controller = \App\Helper\Route::route($_SERVER['PATH_INFO'], $container->get('default_controller_name'), $container);
+
+	$layout = new \App\Helper\LayoutController($controller, $container);
+	echo $layout->body();
+
+} catch(\App\Helper\HttpError $e) {
+	header('HTTP/1.0 '.$e->getCode());
+	die($e->getMessage());
+	// *FIXME*: nice 404/error page
+}
