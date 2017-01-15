@@ -36,6 +36,7 @@ use \App\Helper\AppException;
 
 function update($logger, $redis, $domain_data_expire) {
 	$logger->debug('Fetching next domain');
+	// TODO: use BLPOP instead of LPOP instead of sleeping so much
 	$name = $redis->lpop('update_domains');
 
 	try {
@@ -49,10 +50,10 @@ function update($logger, $redis, $domain_data_expire) {
 		$redis->lpush('update_domains', $name);
 	}
 }
-function large_update($logger, $redis, $domain_data_expire) {
+function large_update($logger, $redis) {
 	$large_update_timestamp = time();
 	$logger->debug('Checking for missing domains');
-	Domain::check_missing($redis, $domain_data_expire);
+	Domain::check_missing($redis);
 	return $large_update_timestamp;
 }
 
@@ -61,7 +62,7 @@ while(true) {
 	update($logger, $redis, $container->get('domain_data_expire'));
 
 	if($large_update_timestamp + $container->get('large_update_interval') < time()) {
-		large_update($logger, $redis, $container->get('domain_data_expire'));
+		large_update($logger, $redis);
 	}
 
 	if($running) {

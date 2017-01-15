@@ -57,11 +57,12 @@ class Domain {
 		$redis->sadd("domains",$name);
 		$redis->rpush("update_domains",$name);
 	}
-	public static function check_missing($redis, $domain_data_expire) {
+	public static function check_missing($redis) {
 		$names = $redis->sort('domains', ['ALPHA'=>true]);
 		foreach($names as $name) {
 			if(!$redis->exists('domain:'.$name)) {
-				Domain::update($redis, $name, $domain_data_expire);
+				// TODO: check if the domain is in the list already
+				$redis->rpush("update_domains",$name);
 			}
 		}
 	}
