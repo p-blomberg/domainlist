@@ -1,5 +1,5 @@
 <?php
-require dirname(__DIR__)."/settings.php";
+require dirname(__DIR__)."/init.php";
 
 // Fire the controller somehow?
 echo "<pre>";

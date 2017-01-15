@@ -1,4 +1,6 @@
 <?php
-require __DIR__."/vendor/autoload.php";
-
-App\Helper\ErrorHandler::register();
+return [
+	'debug' => true,
+	'ErrorHandler.fail_severity' => null,
+	'Logger' => DI\object('\Monolog\Logger')->constructor('log'),
+];
