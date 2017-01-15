@@ -3,7 +3,7 @@
   become: true
   tasks:
     - name: install aptitude
-      apt: name=aptitude state=installed update_cache=yes
+      apt: name=aptitude state=installed
     - name: create /opt/first_apt_cache_update_done
       copy: dest=/opt/first_apt_cache_update_done content="" force=no
       notify: upgrade packages
