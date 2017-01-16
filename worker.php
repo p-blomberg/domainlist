@@ -35,9 +35,14 @@ use \App\Model\Domain;
 use \App\Helper\AppException;
 
 function update($logger, $redis, $domain_data_expire) {
+	$logger->debug('update_domains has '.$redis->llen('update_domains').' members');
+
 	$logger->debug('Fetching next domain');
 	// TODO: use BLPOP instead of LPOP instead of sleeping so much
 	$name = $redis->lpop('update_domains');
+	$redis->lrem('update_domains', 0, $name);
+		// Remove any extra copies of this domain name from update_domains
+		// Because Domain::check_missing() doesn't check before it adds to the list
 
 	try {
 		if($name !== null) {
