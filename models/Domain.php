@@ -19,6 +19,16 @@ class Domain {
 		}
 	}
 
+	public function commit($expire) {
+		$this->redis->hmset('domain:'.$this->name, $this->data);
+		$this->redis->expire('domain:'.$this->name, $expire);
+	}
+
+	public static function delete(string $name, $redis) {
+		$redis->srem('domains', $name);
+		$redis->lrem('update_domains', 0, $name);
+		$redis->del('domain:'.$name);
+	}
 	public static function update($redis, $name, $domain_data_expire) {
 		try {
 			$records = \App\Helper\Resolver::resolve('NS', $name);
@@ -33,12 +43,6 @@ class Domain {
 		$domain = new Domain($redis, $name, $data);
 		$domain->commit($domain_data_expire);
 	}
-
-	public function commit($expire) {
-		$this->redis->hmset('domain:'.$this->name, $this->data);
-		$this->redis->expire('domain:'.$this->name, $expire);
-	}
-
 	public static function fetch($redis, $name) {
 		return new Domain($redis, $name, $redis->hgetall('domain:'.$name));
 	}

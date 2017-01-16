@@ -9,7 +9,7 @@ if(empty($domains)) {
 	foreach($domains as $name => $domain) {
 		?>
 		<tr>
-			<td><?=$name?></td>
+			<td><?=htmlspecialchars($name)?></td>
 			<td>
 				<?php
 				try {
@@ -18,6 +18,9 @@ if(empty($domains)) {
 					}
 				} catch(AppException $e) { echo '(waiting for data)'; }
 				?>
+			</td>
+			<td>
+				<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete_domain_modal" data-domain="<?=htmlspecialchars($name)?>">Delete</button>
 			</td>
 		</tr>
 		<?php

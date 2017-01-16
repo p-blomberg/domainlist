@@ -17,6 +17,19 @@ class domainController extends Controller {
 		}
 	}
 
+	public function delete() {
+		if(!isset($_POST['name'])) {
+			throw new HttpError401("Bad Request; Field missing in POST request: name");
+		}
+		try {
+			$name = $_POST['name'];
+			Domain::delete($name, $this->container->get('Redis'));
+			$this->json_data = ["result" => "ok"];
+		} catch(AppException $e) {
+			$this->json_data = ["result" => "fail", "error" => $e->getMessage()];
+		}
+	}
+
 	public function list_tbody() {
 		$this->use_layout = false;
 		$redis = $this->container->get('Redis');
