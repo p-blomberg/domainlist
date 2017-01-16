@@ -3,7 +3,8 @@
         "php-di/php-di": "^5.4",
         "monolog/monolog": "^1.22",
         "psr/log": "^1.0",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "daverandom/libdns": "^1.1"
     },
 		"autoload": {
 			"psr-4": {

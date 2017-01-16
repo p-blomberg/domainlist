@@ -20,14 +20,14 @@ class Domain {
 	}
 
 	public static function update($redis, $name, $domain_data_expire) {
-		$records = dns_get_record($name, DNS_NS);
-		if($records == false) {
-			// This method has no error handling, it simply puts out "false" and it is impossible to check for NXDOMAIN, SERVFAIL, TIMEOUT or any other error...
-			throw new AppException('dns_get_record failed');
+		try {
+			$records = \App\Helper\Resolver::resolve('NS', $name);
+		} catch(\Exception $e) {
+			throw new AppException(get_class($e)." from Resolver: ".$e->getMessage());
 		}
 		$ns = [];
 		foreach($records as $r) {
-			$ns[] = $r['target'];
+			$ns[] = $r->getData();
 		}
 		$data['ns'] = serialize($ns);
 		$domain = new Domain($redis, $name, $data);
