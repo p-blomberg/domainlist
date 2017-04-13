@@ -10,4 +10,4 @@ $container = $builder->build();
 unset($builder);
 
 // Set up ErrorHandler
-App\Helper\ErrorHandler::register($container->get('debug'), $container->get('ErrorHandler.fail_severity'), $container->get('Logger'));
+$container->set('ErrorHandler', App\Helper\ErrorHandler::register($container->get('debug'), $container->get('ErrorHandler.fail_severity'), $container->get('Logger')));
