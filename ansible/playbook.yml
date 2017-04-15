@@ -19,7 +19,7 @@
     - name: install nginx
       apt: name=nginx state=installed
     - name: install php7 and addons
-      apt: name=php7.0-cli,php7.0-fpm,php7.0-curl,php7.0-json state=installed
+      apt: name=php7.0-cli,php7.0-fpm,php7.0-curl,php7.0-json,php7.0-pgsql state=installed
       notify: restart php
 
     - name: configure nginx (remove default vhost)
@@ -44,6 +44,14 @@
 
     - name: install redis
       apt: name=redis-server state=installed
+
+    - name: install postgresql
+      apt: name=postgresql-9.6 state=installed
+    - name: install psycopg2
+      apt: name=python-psycopg2 state=installed
+    - name: create pg superuser for vagrant
+      postgresql_user: name=vagrant role_attr_flags=SUPERUSER
+      become_user: postgres
 
   handlers:
     - name: upgrade packages
