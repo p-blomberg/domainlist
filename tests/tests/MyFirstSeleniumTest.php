@@ -1,7 +1,11 @@
 <?php
 class MyFirstSeleniumTest extends PHPUnit_Extensions_Selenium2TestCase {
+	public static $browsers = [
+		['browserName' => 'firefox'],
+		['browserName' => 'chrome'],
+	];
+
 	protected function setUp() {
-		$this->setBrowser('firefox');
 		$this->setBrowserUrl('http://localhost/');
 	}
 
