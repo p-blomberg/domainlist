@@ -1,0 +1,11 @@
+[Unit]
+Description=Selenium Standalone Server
+
+[Service]
+Type=simple
+User=selenium
+
+ExecStart=/usr/bin/xvfb-run /usr/bin/java -Dwebdriver.gecko.driver="/opt/geckodriver" -jar /opt/selenium-server.jar
+
+[Install]
+WantedBy=multi-user.target

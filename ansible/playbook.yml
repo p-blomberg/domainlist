@@ -4,9 +4,10 @@
   tasks:
     - name: install aptitude
       apt: name=aptitude state=installed
-    - name: create /opt/first_apt_cache_update_done
-      copy: dest=/opt/first_apt_cache_update_done content="" force=no
-      notify: upgrade packages
+    - name: upgrade packages
+      apt: update_cache=yes upgrade=safe cache_valid_time=86400
+      # don't re-update cache if it is less than 24h old
+
     - name: reconfigure locales
       template: src=locale.gen.j2 dest=/etc/locale.gen owner=root group=root
       notify: re-generate locales
@@ -45,12 +46,45 @@
     - name: install redis
       apt: name=redis-server state=installed
 
+    - name: install java to run selenium server
+      apt: name=openjdk-8-jre-headless state=installed
+
+    - name: download selenium server
+      get_url: dest=/opt/selenium-server.jar url=https://selenium-release.storage.googleapis.com/3.4/selenium-server-standalone-3.4.0.jar
+      notify: restart selenium
+
+    - name: add apt source for firefox
+      apt_repository: repo="deb http://http.debian.net/debian experimental main" update_cache=yes
+
+    - name: upgrade deps for firefox
+      apt: name=libnss3 default_release="experimental" state=installed
+
+    - name: install firefox
+      apt: name=firefox default_release="experimental" state=latest
+      notify: restart selenium
+
+    - name: download geckodriver
+      unarchive: src=https://github.com/mozilla/geckodriver/releases/download/v0.16.0/geckodriver-v0.16.0-linux64.tar.gz dest=/opt remote_src=yes
+      notify: restart selenium
+
+    - name: install xvfb for headless firefox
+      apt: name=xvfb state=installed
+
+    - name: create selenium system user
+      user: name=selenium system=yes
+
+    - name: systemd unit file for selenium server
+      copy: src=selenium.service dest=/etc/systemd/system/selenium.service owner=root group=root mode=0644
+
+    - name: enable and start selenium service
+      systemd: name=selenium.service enabled=yes state=started
+
   handlers:
-    - name: upgrade packages
-      apt: update_cache=yes upgrade=safe
     - name: re-generate locales
       command: /usr/sbin/locale-gen
     - name: restart nginx
       service: name=nginx state=restarted
     - name: restart php
       service: name=php7.0-fpm state=restarted
+    - name: restart selenium
+      service: name=selenium state=restarted
